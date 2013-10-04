@@ -1,4 +1,4 @@
-cre489lab4
+<<<<<<< HEAD
 ===========
 
 GoBack3 ARQ - sockets send the alphabet to simulate ARQ
@@ -10,6 +10,3 @@ o When the Primary receives an ACK from the Secondary, it adjusts the send windo
 removes the packet from its buffer. It also displays an indication of which packet was 
 positively acknowledged. 
 o When the Primary receives a NAK from the Secondary, it adjusts the send window and 
-retransmits all the packets in the send window. It also displays an indication of which 
-packets were negatively acknowledged and were retransmitted. 
-
