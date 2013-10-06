@@ -1,6 +1,9 @@
 #include <string>
+#include <sstream>
 #include <iostream>
 #include <cstdio>
+#include <cassert>
+
 #include "primaryfunction.h"
 #include "secondaryfunction.h"
 
@@ -15,7 +18,8 @@ int main(int argc, char **argv)
 	}
 	else
 	{
-		sscanf(argv[1], "%d", &ber);
+		std::stringstream ss(argv[1]);
+		ss >> ber;
 	}
 
 	ArqContext context(ber);

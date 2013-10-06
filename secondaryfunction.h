@@ -6,7 +6,15 @@
 class SecondaryFunction : public ArqFunction
 {
 public:
-	virtual bool poll(ArqContext *context) { return true; }
+	SecondaryFunction();
+	virtual bool poll(ArqContext *context) override;
+
+private:
+	bool processPacket(ArqContext *context, const Packet *packet);
+	void sendAck(ArqContext *context, uint8_t packetNumber);
+	void sendNak(ArqContext *context, uint8_t packetNumber);
+	
+	uint8_t _nextPacket;
 };
 
 #endif // SECONDARYFUNCTION_H
