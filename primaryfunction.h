@@ -3,16 +3,26 @@
 
 #include "function.h"
 
+struct Frame
+{
+	uint8_t number;
+	bool sent;
+};
+
 class PrimaryFunction : public ArqFunction
 {
 public:
-	virtual bool poll(ArqContext *context) { return true; }
+	PrimaryFunction();
+	virtual bool poll(ArqContext *context);
 
 private:
-	Packet window[3];
+	Packet generatePacket(uint8_t number) const;
+	void slideWindow(uint8_t number);
+	void sendWindow(ArqContext *context);
 
-	Packet *index;
-	Packet packets[13]; 
+	bool _beginFlag;
+	
+	Frame _window[3];
 };
 
 #endif // PRIMARYFUNCTION_H 

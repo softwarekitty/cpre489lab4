@@ -1,28 +1,95 @@
-#include "function.h"
 #include "primaryfunction.h"
+#include <cassert>
 
-PrimaryFunction::PrimaryFunction()
+PrimaryFunction::PrimaryFunction():
+	_beginFlag(true)
 {
-
-	Packet packets [13];
-	char[][] packetContent = {{'a','b'},{'c','d'},{'e','f'},{'g','h'},{'i','j'},{'k','l'},{'m','n'},{'o','p'},{'q','r'},{'s','t'},{'u','v'},{'w','x'},{'y','z'}};
-	for(size+t i = 0; i < 13; i++)
-	{
-		packets[i].type = 1;//maybe Packet.PacketType_t.DATA_PACKET ?
-		packets[i].number = i;
-		packets[i].data_raw[0]=packetContent[i][0];
-		packets[i].data_raw[1]=packetContent[i][1];
-		//TODO - create crc checksum info?
-	}
-	//TODO - ??populate window, initialize index???
-
-	//send first three packets
-
 }
 
-bool PrimaryFunction::poll(ArgContext *context)
+bool PrimaryFunction::poll(ArqContext *context)
 {
-	//if we have an ACK, advance the window (set Slast to Rnext)
-	//if there is a timeout, resend all items in the window (up to the last item, but not beyond)
+	std::vector<Packet> packets = context->recvFromSecondary();
+	
+	if(_beginFlag)
+	{
+		_beginFlag = false;
+		_window[0].number = 0; _window[0].sent = false;
+		_window[1].number = 1; _window[1].sent = false;
+		_window[2].number = 2; _window[2].sent = false;
+		sendWindow(context);		
+
+		return false;
+	}
+	else
+	{
+		for(size_t i = 0; i < packets.size(); i++)
+		{
+			const Packet &packet = packets[i];
+			
+			switch(packet.type)
+			{
+			case Packet::ACK_PACKET:
+				slideWindow(packet.number);
+				if(packet.number == 13)
+					return true;
+				break;
+
+			case Packet::NAK_PACKET:
+				slideWindow(packet.number);
+				_window[0].sent = false;
+				break;
+			
+			default:
+				assert(false);
+			}
+		}
+
+		sendWindow(context);
+	}
+
+	return false;
+}
+
+Packet PrimaryFunction::generatePacket(uint8_t number) const
+{
+	Packet packet;
+	packet.type = Packet::DATA_PACKET;
+	packet.number = number;
+	packet.data_raw[0] = ('A' + 2 * number);
+	packet.data_raw[1] = ('A' + 2 * number + 1);
+	packet.addCrc16();
+	return packet;
+}
+
+void PrimaryFunction::slideWindow(uint8_t number)
+{
+	uint8_t amount = number - _window[0].number;
+	if(amount == 0)
+		return;
+
+	for(size_t i = 0; i < 3 - amount; i++)
+	{
+		_window[i] = _window[i + amount];
+		number =  _window[i].number;
+	}
+	for(size_t i = 3 - amount; i < 3; i++)
+	{
+		_window[i].number = ++number;
+		_window[i].sent = false;
+	}
+}
+
+void PrimaryFunction::sendWindow(ArqContext *context)
+{
+	for(size_t i = 0; i < 3; i++)
+	{
+		if(_window[i].number > 12)
+			break;
+
+		if(!_window[i].sent)
+		{
+			context->sendToSecondary(generatePacket(_window[i].number));
+		}
+	}
 }
 

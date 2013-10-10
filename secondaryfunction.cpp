@@ -33,12 +33,12 @@ bool SecondaryFunction::processPacket(ArqContext *context, const Packet *packet)
 	}
 	else if(packet->number == _nextPacket)
 	{
-		std::cout << (char) packet->data_raw[0] << (char) packet->data_raw[1] << std::endl;
+		// std::cout << (char) packet->data_raw[0] << (char) packet->data_raw[1] << std::endl;
 
-		sendAck(context, _nextPacket);
 		_nextPacket++;
+		sendAck(context, _nextPacket);
 
-		return packet->number == 12;
+		return _nextPacket == 13;
 	}
 	else
 	{

@@ -7,7 +7,7 @@ class SecondaryFunction : public ArqFunction
 {
 public:
 	SecondaryFunction();
-	virtual bool poll(ArqContext *context) override;
+	virtual bool poll(ArqContext *context);
 
 private:
 	bool processPacket(ArqContext *context, const Packet *packet);

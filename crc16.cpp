@@ -1,6 +1,6 @@
 #include "crc16.h"
 
-inline uint16_t reverse(const uint16_t value)
+inline uint16_t reverse(uint16_t value)
 {
 	uint16_t result = 0;
 
@@ -14,12 +14,12 @@ inline uint16_t reverse(const uint16_t value)
 	return result;
 }
 
-inline uint16_t crc16_xor_reg(const uint16_t reg, const uint16_t reg_msb)
+inline uint16_t crc16_xor_reg(uint16_t reg, uint16_t reg_msb)
 {
 	return reg_msb ? reg ^ CRC16_GENERATOR : reg;
 }
 
-uint16_t crc16_compute(const uint8_t *data, const size_t length)
+uint16_t crc16_compute(const uint8_t *data, size_t length)
 {
     uint16_t reg = 0;
 
