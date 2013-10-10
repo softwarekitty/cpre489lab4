@@ -16,10 +16,13 @@ PrimaryFunction::PrimaryFunction()
 	}
 	//TODO - ??populate window, initialize index???
 
+	//send first three packets
+
 }
 
 bool PrimaryFunction::poll(ArgContext *context)
 {
-	//TODO
+	//if we have an ACK, advance the window (set Slast to Rnext)
+	//if there is a timeout, resend all items in the window (up to the last item, but not beyond)
 }
 
